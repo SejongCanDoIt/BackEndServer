@@ -177,10 +177,10 @@ public class ReservationController {
     }
 
     @GetMapping("/manager-list")
-    public ResponseEntity<List<Reservation>> managerList() {
-        List<Reservation> reservations = reservationService.managerList();
-        if (!reservations.isEmpty()) {
-            return ResponseEntity.ok(reservations);
+    public ResponseEntity<List<ReservationsDto>> managerList() {
+        List<ReservationsDto> reservationsDtoList = reservationService.managerList();
+        if (!reservationsDtoList.isEmpty()) {
+            return ResponseEntity.ok(reservationsDtoList);
         } else {
             return ResponseEntity.noContent().build();
         }
@@ -299,16 +299,28 @@ public class ReservationController {
         reservationService.cancel(reservation_id);
     }
 
-    @PostMapping("/time-list")
+    @PostMapping("/time-list-room")
     public List<TimeDto> timeList(@RequestBody DateByRoomDto data) {
         LocalDateTime todayDate = LocalDateTime.of(data.getYear(), data.getMonth(), data.getDay(), 0, 0);
-        return reservationService.getTodayTimeList(todayDate, data.getRoomId());
+        return reservationService.getTodayTimeListRoom(todayDate, data.getRoomId());
+    }
+
+    @PostMapping("/get-reserve-list-all")
+    public List<ReservationsDto> getTodayReserveList(@RequestBody DateDto data) {
+        LocalDateTime todayDate = LocalDateTime.of(data.getYear(), data.getMonth(), data.getDay(), 0, 0);
+        return reservationService.getTodayTimeList(todayDate);
+    }
+
+    @PostMapping("/today-time-check-room")
+    public int[] getTodayTimeCheckRoom(@RequestBody DateByRoomDto data) {
+        LocalDateTime todayDate = LocalDateTime.of(data.getYear(), data.getMonth(), data.getDay(), 0, 0);
+        return reservationService.getTodayTimeCheckRoom(todayDate, data.getRoomId());
     }
 
     @PostMapping("/today-time-check")
-    public int[] getTodayTimeCheck(@RequestBody DateByRoomDto data) {
+    public int[] getTodayTimeCheck(@RequestBody DateDto data) {
         LocalDateTime todayDate = LocalDateTime.of(data.getYear(), data.getMonth(), data.getDay(), 0, 0);
-        return reservationService.getTodayTimeCheck(todayDate, data.getRoomId());
+        return reservationService.getTodayTimeCheck(todayDate);
     }
 
     @PostMapping("/month-reserve-check")
@@ -357,6 +369,9 @@ public class ReservationController {
     @PatchMapping("/check-noshow")
     public ResponseEntity<Boolean> checkNoShow(@Login Member loginMember) {
         LocalDateTime now = LocalDateTime.now();
+        if(reservationService.getReserveCntBySno(loginMember.getStudentNo()) == 0) {
+            throw new NotAvailableNoShowCheckException("예약 내역이 존재하지 않은 회원입니다.");
+        }
         List<ReservationsDto> reservationList = reservationService.getReservationListBySnoAndStatus(loginMember.getStudentNo(), ReservationStatus.RESERVED);
         for(ReservationsDto reservation : reservationList) {
             log.info("예약 시작 시간: {}, 예약 끝나는 시간: {}, 예약 노쇼 체크 = {}", reservation.getStart(), reservation.getEnd(), reservation.getNoShowCheck());
@@ -371,14 +386,15 @@ public class ReservationController {
         return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/get-noshow/{sno}")
-    public ResponseEntity<Integer> getNoShowCnt(@PathVariable("sno") String sno) {
-        return ResponseEntity.ok(memberService.getNoShowCnt(sno));
+
+    @GetMapping("/get-reserve-cnt-all")
+    public ResponseEntity<Integer> getReserveCntAll() {
+        return ResponseEntity.ok(reservationService.getReserveCntAll());
     }
 
-    @PatchMapping("/reset-noshow/{sno}")
-    public void checkNoShow(@PathVariable("sno") String sno) {
-        memberService.resetNoShowCnt(sno);
+    @GetMapping("/get-reserve-cnt-authority")
+    public ResponseEntity<Integer> getReserveCntByAuthority(@RequestParam AuthState authority) {
+        return ResponseEntity.ok(reservationService.getReserveCntByAuthority(authority));
     }
 
 }
