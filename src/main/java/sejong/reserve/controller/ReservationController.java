@@ -1,7 +1,6 @@
 package sejong.reserve.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +11,8 @@ import sejong.reserve.service.*;
 import sejong.reserve.web.argumentresolver.Login;
 import sejong.reserve.web.exception.*;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +54,8 @@ public class ReservationController {
             throw new NotAvailableReservedException("학부생은 정기예약을 진행할 수 없습니다.");
         }
 
+        // 시작 시간이 끝 시간 보다 앞인지?
+        checkStartEnd(start, end);
         // 정기 및 일반 예약에 대한 달이 적합한지?
         log.info("checkStateLimitation 실행 : 정기 및 일반 예약에 대한 달이 적합한지?");
         checkStateLimitation(start, authority);
@@ -71,10 +68,11 @@ public class ReservationController {
         // 예약 시간 gap 이 권한에 적합한지?
         log.info("checkTimeGap:  예약 시간 gap 이 권한에 적합한지?");
         checkTimeGap(start, end, authority);
+        // 예약이 다음날로 넘어가는지?
+        checkIsNextDay(start, end);
 
         // 예약 저장
         Room room = roomService.detail(room_id);
-//        log.info("room = {}", room);
         Reservation reservation = Reservation.createReservation(reservationDto, loginMember, room);
         log.info("reservation = {}", reservation);
         reservationService.makeReservation(reservation);
@@ -88,12 +86,53 @@ public class ReservationController {
         return new ResponseEntity<>(reservation.getId(), HttpStatus.OK);
     }
 
+    private static void checkStartEnd(LocalDateTime start, LocalDateTime end) {
+        if(start.isAfter(end)) {
+            throw new NotAvailableReservedException("예약의 시작 시간은 끝 시간 보다 앞서야 합니다");
+        }
+    }
+
+    private static void checkIsNextDay(LocalDateTime start, LocalDateTime end) {
+        log.info("start.getDayOfMonth() = {}", start.getDayOfMonth());
+        log.info("end.getDayOfMonth() = {}", end.getDayOfMonth());
+
+        if(end.getDayOfMonth() > start.getDayOfMonth()) {
+            throw new NotAvailableReservedException("예약은 오늘 날짜 안에서만 가능합니다.");
+        }
+    }
+
     @PostMapping("/email")
     private void sendEmail(@Login Member loginMember, @RequestParam("reservation_id") Long reservationId) {
         Reservation reservation = reservationService.getReservation(reservationId).get();
-        String emailSubject = "예약이 완료되었습니다.";// 메일의 제목을 여기에다 적으면 됩니다.
-        String emailText = "예약이 완료되었습니다.\n 시작시간: " + reservation.getStart() + "\n 종료시간: " + reservation.getEnd()+"\n장소: "+reservation.getId(); //이메일에 들어갈 문장들 여기에 적으면 됩니다.
+        log.info("reservation = {}", reservationService.getReservation(reservationId).get());
+        String emailSubject = loginMember.getName()+"님의 예약이 완료되었습니다.";// 메일의 제목을 여기에다 적으면 됩니다.
+        String emailText = "예약이 완료되었습니다.\n 시작시간: " + reservation.getStart() + "\n 종료시간: " + reservation.getEnd()+"\n장소: "+reservation.getRoom().getName(); //이메일에 들어갈 문장들 여기에 적으면 됩니다.
         emailService.sendSimpleMessage(loginMember.getEmail(), emailSubject, emailText); // 이메일 보내기
+    }
+
+    @PostMapping("/email-regular")
+    private void sendRegularEmail(@Login Member loginMember, @RequestParam("reservation_id") Long reservationId,
+                                  @RequestParam("repeat_type") String repeatType, @RequestParam("repeat_count") int repeatCount) {
+
+        // 해당 reservation 가져오기
+        Reservation reservation = reservationService.getReservation(reservationId).get();
+        String emailSubject = loginMember.getName()+"님의 정기예약이 완료되었습니다.";
+
+        String repeat;
+        if(repeatType.equals("daily")){
+            repeat = "일간";
+        } else if (repeatType.equals("weekly")) {
+            repeat = "주간";
+        }else if(repeatType.equals("monthly")){
+            repeat = "월간";
+        }else{
+            repeat = repeatType;
+        }
+
+        String emailText = "정기예약이 "+repeat+" "+repeatCount+"번으로 설정되었습니다. "
+                + "예약 시작일: "+ reservation.getStart() + ", 예약 종료일: "+ reservation.getEnd();
+
+        emailService.sendSimpleMessage(loginMember.getEmail(), emailSubject, emailText);
     }
 
     private void checkStateLimitation(LocalDateTime start, AuthState authority) {
