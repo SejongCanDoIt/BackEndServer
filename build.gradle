@@ -78,3 +78,7 @@ tasks.withType(JavaCompile) {
 	// 자바 클래스를 실행시킬 JVM의 최소 버전
 	targetCompatibility = '11'
 }
+
+jar {
+    enabled = false
+}
