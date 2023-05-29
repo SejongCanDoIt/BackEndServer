@@ -1,8 +1,11 @@
 package sejong.reserve.domain;
 
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
+import sejong.reserve.dto.CreateRequestNoticeDto;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Data

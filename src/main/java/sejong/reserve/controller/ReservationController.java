@@ -1,7 +1,9 @@
 package sejong.reserve.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +13,16 @@ import sejong.reserve.service.*;
 import sejong.reserve.web.argumentresolver.Login;
 import sejong.reserve.web.exception.*;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @RequiredArgsConstructor

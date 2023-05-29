@@ -17,7 +17,7 @@
 #      org.hibernate.orm.jdbc.bind: trace #스프링 부트 3.x, hibernate6
 # org.hibernate.orm.jdbc.bind: trace #스프링 부트 3.x, hibernate6
 server:
-  address: 0.0.0.0
+  address: localhost
   port: 8080
   servlet:
     session:
@@ -26,9 +26,9 @@ spring:
   jackson:
     time-zone: Asia/Seoul
   datasource:
-    url: jdbc:mysql://reservedb.ciulnwxqng2y.ap-northeast-2.rds.amazonaws.com:3306/reserveDB?serverTimezone=Asia/Seoul
-    username: admin
-    password: q1w2e3r4*
+    url: jdbc:mysql://localhost:3306/reserveDB?serverTimezone=Asia/Seoul
+    username: root
+    password: 1111
     driver-class-name: com.mysql.cj.jdbc.Driver
   mail:
     host: smtp.gmail.com
