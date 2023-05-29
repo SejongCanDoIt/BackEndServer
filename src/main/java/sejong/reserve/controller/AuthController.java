@@ -75,8 +75,6 @@ public class AuthController {
 
   @GetMapping("/checkLogin")
   public ResponseEntity<String> checkLogin(HttpSession session) throws Exception {
-    log.info("checkLogin-test");
-
     if (session instanceof AdminDto) {
       AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
       if (admin == null) {
