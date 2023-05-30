@@ -78,12 +78,12 @@ public class AuthController {
     log.info("checkLogin-test");
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
-//    log.info("session member instance = {}", sessionAttribute instanceof Member);
-//    log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
+    log.info("session member instance = {}", sessionAttribute instanceof Member);
+    log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
 
     if (sessionAttribute instanceof AdminDto) {
       AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
-     log.info("checkLogin session = {}", admin);
+      log.info("checkLogin session = {}", admin);
       if (admin == null) {
         log.info("admin null");
         throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
@@ -93,8 +93,7 @@ public class AuthController {
       }
     } else if (sessionAttribute instanceof Member) {
       Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-     log.info("checkLogin session = {}", member);
-
+      log.info("checkLogin session = {}", member);
       if (member == null) {
         log.info("member null");
         throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
