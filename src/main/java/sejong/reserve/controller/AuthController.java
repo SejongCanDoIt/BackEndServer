@@ -82,17 +82,6 @@ public class AuthController {
     log.info("session member instance = {}", sessionAttribute instanceof Member);
     log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
 
-    if (sessionAttribute instanceof AdminDto) {
-      AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
-      log.info("checkLogin session = {}", admin);
-      if (admin == null) {
-        log.info("admin null");
-        throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
-      } else {
-        log.info("admin login success");
-        return new ResponseEntity<>(admin.getLoginId(), HttpStatus.OK);
-      }
-    }
 //    else if (sessionAttribute instanceof Member) {
       Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
@@ -116,6 +105,7 @@ public class AuthController {
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
     log.info("session admin instance = {}", sessionAttribute);
+    log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
 
 //    if (sessionAttribute instanceof AdminDto) {
       AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
@@ -127,6 +117,6 @@ public class AuthController {
         log.info("admin login success");
         return new ResponseEntity<>(admin.getLoginId(), HttpStatus.OK);
       }
-
+//    }
   }
 }

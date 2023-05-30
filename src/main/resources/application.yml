@@ -21,6 +21,9 @@ server:
   port: 8080
   servlet:
     session:
+      cookie:
+        same-site: none
+        secure: true
       tracking-modes: cookie
 spring:
   jackson:
