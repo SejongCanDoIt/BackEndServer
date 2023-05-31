@@ -60,6 +60,8 @@ dependencies {
 	implementation 'com.google.api-client:google-api-client:2.2.0'
 	implementation 'com.google.api-client:google-api-client-jackson2:1.32.1'
 
+	implememtation 'org.springframework.session:spring-session-jdbc'
+
 }
 
 tasks.named('test') {
