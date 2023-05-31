@@ -8,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 import sejong.reserve.dto.ReservationDto;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
