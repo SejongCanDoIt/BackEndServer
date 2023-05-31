@@ -11,13 +11,14 @@ import sejong.reserve.web.exception.NotEnoughCntException;
 import sejong.reserve.web.function.AuthStateConverter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Getter @Setter
 @ToString(exclude = "reservationLogs")
 @Table(name = "member")
-public class Member {
+public class Member implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "member_sequence")
     @SequenceGenerator(name = "member_sequence", sequenceName = "member_sequence", initialValue = 1, allocationSize = 1)

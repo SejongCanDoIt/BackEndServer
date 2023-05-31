@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "notice")
-public class Notice {
+public class Notice implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notice_id")
     private Long id; // 공지 id

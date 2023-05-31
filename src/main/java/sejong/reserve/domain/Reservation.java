@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter @Getter
 @ToString(exclude = {"member", "room"})
 @Table(name = "reservation_log")
-public class Reservation {
+public class Reservation implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
     private Long id; // 예약 번호
