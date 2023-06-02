@@ -16,6 +16,7 @@ import sejong.reserve.web.SessionConst;
 import sejong.reserve.web.exception.NotLoginException;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -27,11 +28,13 @@ public class AuthController {
   private final MemberService memberService;
   private final AdminService adminService;
 
+  private final HttpSession session;
+
   @PostMapping("/login")
   public ResponseEntity<?> login(
           @RequestBody LoginDto loginInfo,
-          HttpServletResponse response,
-          HttpSession session) throws Exception {
+          HttpServletResponse response
+          ) throws Exception {
     String loginId = loginInfo.getSno();
     String password = loginInfo.getPassword();
 
@@ -68,15 +71,16 @@ public class AuthController {
   }
 
   @GetMapping("/logout")
-  public ResponseEntity<?> logout(HttpSession httpSession) throws Exception {
-    httpSession.invalidate();
+  public ResponseEntity<?> logout() throws Exception {
+    session.invalidate();
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/checkLogin")
-  public ResponseEntity<String> checkLogin(HttpSession session) throws Exception {
+  public ResponseEntity<String> checkLogin() throws Exception {
     log.info("checkLogin-member-test");
 
+//    HttpSession session = request.getSession();
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
     log.info("Session object type: " + sessionAttribute.getClass().getName());
