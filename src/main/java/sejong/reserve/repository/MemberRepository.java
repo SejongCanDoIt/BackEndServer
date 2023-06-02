@@ -47,7 +47,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "select sum(m.noshow) from Member m")
     Integer sumOfNoShowCntAll();
 
-    @Query(value = "select m from Member m where m.sno = :sno")
+    @Query(value = "select m from Member m where m.studentNo = :sno")
     Optional<Member> findBySno(String sno);
 
 }
