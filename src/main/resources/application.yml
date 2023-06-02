@@ -24,7 +24,7 @@ server:
       cookie:
         same-site: none
         secure: true
-      tracking-modes: cookie
+#      tracking-modes: cookie
 spring:
   jackson:
     time-zone: Asia/Seoul
