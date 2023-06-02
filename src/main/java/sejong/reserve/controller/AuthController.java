@@ -28,13 +28,13 @@ public class AuthController {
   private final MemberService memberService;
   private final AdminService adminService;
 
-  private final HttpSession session;
+
 
   @PostMapping("/login")
   public ResponseEntity<?> login(
           @RequestBody LoginDto loginInfo,
-          HttpServletResponse response
-          ) throws Exception {
+          HttpServletResponse response,
+          HttpSession session) throws Exception {
     String loginId = loginInfo.getSno();
     String password = loginInfo.getPassword();
 
@@ -71,16 +71,16 @@ public class AuthController {
   }
 
   @GetMapping("/logout")
-  public ResponseEntity<?> logout() throws Exception {
-    session.invalidate();
+  public ResponseEntity<?> logout(HttpSession httpSession) throws Exception {
+    httpSession.invalidate();
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/checkLogin")
-  public ResponseEntity<String> checkLogin() throws Exception {
+  public ResponseEntity<String> checkLogin(HttpServletRequest request) throws Exception {
     log.info("checkLogin-member-test");
 
-//    HttpSession session = request.getSession();
+    HttpSession session = request.getSession();
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
     log.info("Session object type: " + sessionAttribute.getClass().getName());
