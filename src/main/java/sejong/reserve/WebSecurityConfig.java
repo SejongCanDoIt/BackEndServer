@@ -34,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.cors().and() // <-- 이 부분을 추가
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/auth/login", "/auth/checkLogin", "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**", "/room/list", "/room/detail/**", "/notice/list", "/notice/detail/**", "/reserve/today-reserve-cnt-all")
@@ -49,6 +49,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout()
-                .permitAll();
+                .permitAll()
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 }
