@@ -75,27 +75,24 @@ public class AuthController {
 
   @GetMapping("/checkLogin")
   public ResponseEntity<String> checkLogin(HttpSession session) throws Exception {
-    log.info("checkLogin-test");
+    log.info("checkLogin-member-test");
+
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
-    log.info("session admin instance = {}", sessionAttribute);
-    log.info("session member instance = {}", sessionAttribute instanceof Member);
-    log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
+    log.info("Session object type: " + sessionAttribute.getClass().getName());
+    log.info("session member instance = {}", sessionAttribute);
 
-//    else if (sessionAttribute instanceof Member) {
-      Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+    Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-      log.info("checkLogin session = {}", member);
-      if (member == null) {
-        log.info("member null");
-        throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
-      } else {
-        log.info("member login success");
-        return new ResponseEntity<>(member.getStudentNo(), HttpStatus.OK);
-      }
-//    } else{
-//      throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
-//    }
+    log.info("checkLogin session = {}", member);
+    if (member == null) {
+      log.info("member null");
+      throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
+    } else {
+      log.info("member login success");
+      return new ResponseEntity<>(member.getStudentNo(), HttpStatus.OK);
+    }
+
   }
 
 
@@ -105,18 +102,15 @@ public class AuthController {
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
     log.info("session admin instance = {}", sessionAttribute);
-    log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
 
-//    if (sessionAttribute instanceof AdminDto) {
-      AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
-      log.info("checkLogin session = {}", admin);
-      if (admin == null) {
-        log.info("admin null");
-        throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
-      } else {
-        log.info("admin login success");
-        return new ResponseEntity<>(admin.getLoginId(), HttpStatus.OK);
-      }
-//    }
+    AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
+    log.info("checkLogin session = {}", admin);
+    if (admin == null) {
+      log.info("admin null");
+      throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
+    } else {
+      log.info("admin login success");
+      return new ResponseEntity<>(admin.getLoginId(), HttpStatus.OK);
+    }
   }
 }

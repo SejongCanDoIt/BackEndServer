@@ -37,6 +37,7 @@ spring:
     store-type: jdbc
     jdbc:
       initialize-schema: always
+      table-name: SPRING_SESSION
   mail:
     host: smtp.gmail.com
     port: 587
@@ -64,3 +65,5 @@ spring:
         format_sql: true
       logging.level:
         org.hibernate.type: trace #스프링 부트 2.x, hibernate5
+    open-in-view: false
+    generate-ddl: true
