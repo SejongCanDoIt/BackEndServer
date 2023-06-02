@@ -3,22 +3,30 @@ package sejong.reserve.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import sejong.reserve.web.exception.NotEnoughCntException;
 import sejong.reserve.web.function.AuthStateConverter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Getter @Setter
+@Builder
 @ToString(exclude = "reservationLogs")
 @Table(name = "member")
-public class Member implements Serializable {
+public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "member_sequence")
     @SequenceGenerator(name = "member_sequence", sequenceName = "member_sequence", initialValue = 1, allocationSize = 1)
@@ -71,5 +79,44 @@ public class Member implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Reservation> reservationLogs;
+
+
+    // UserDetails
+
+
+    @ElementCollection(fetch = FetchType.EAGER) //roles 컬렉션
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return studentNo;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
 

@@ -10,6 +10,7 @@ import sejong.reserve.domain.Admin;
 import sejong.reserve.domain.Member;
 import sejong.reserve.dto.AdminDto;
 import sejong.reserve.dto.LoginDto;
+import sejong.reserve.dto.MemberDto;
 import sejong.reserve.service.AdminService;
 import sejong.reserve.service.MemberService;
 import sejong.reserve.web.SessionConst;
@@ -30,7 +31,7 @@ public class AuthController {
 
 
 
-  @PostMapping("/login")
+//  @PostMapping("/login")
   public ResponseEntity<?> login(
           @RequestBody LoginDto loginInfo,
           HttpServletResponse response,
@@ -68,6 +69,11 @@ public class AuthController {
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username or password is incorrect");
     }
+  }
+
+  @PostMapping("/login")
+  public String login(@RequestBody LoginDto loginInfo) {
+    return memberService.login(loginInfo);
   }
 
   @GetMapping("/logout")

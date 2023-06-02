@@ -22,25 +22,25 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/*.ico", "/error","/excel/**");
 
-        registry.addInterceptor(new LoginCheckInterceptor())
-                .order(2)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/", "/auth/login",
-                        "/auth/checkLogin",
-                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
-                        "/room/list", "/room/detail/**", "/notice/list", "/notice/detail/**",
-                        "/reserve/today-reserve-cnt-all");
-
-        registry.addInterceptor(new AdminCheckInterceptor())
-                .order(2)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/", "/auth/login",
-                        "/auth/checkLogin",
-                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
-                        "/member/**", "/reserve/**", "/notice/list", "/notice/detail/**",
-                        "/room/list", "/room/detail/**", "/reserve/today-reserve-cnt-all");
+//        registry.addInterceptor(new LoginCheckInterceptor())
+//                .order(2)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns(
+//                        "/", "/auth/login",
+//                        "/auth/checkLogin",
+//                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
+//                        "/room/list", "/room/detail/**", "/notice/list", "/notice/detail/**",
+//                        "/reserve/today-reserve-cnt-all");
+//
+//        registry.addInterceptor(new AdminCheckInterceptor())
+//                .order(2)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns(
+//                        "/", "/auth/login",
+//                        "/auth/checkLogin",
+//                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
+//                        "/member/**", "/reserve/**", "/notice/list", "/notice/detail/**",
+//                        "/room/list", "/room/detail/**", "/reserve/today-reserve-cnt-all");
     }
 
     @Override
