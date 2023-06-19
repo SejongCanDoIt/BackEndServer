@@ -6,14 +6,13 @@ import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "room")
 @ToString(exclude = "reservationLogs")
-public class Room implements Serializable {
+public class Room {
 
 
     @Id @GeneratedValue

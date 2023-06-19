@@ -6,6 +6,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import sejong.reserve.domain.AuthState;
 import sejong.reserve.domain.Member;
+import sejong.reserve.dto.ManagementDto;
+import sejong.reserve.repository.ManagementRepository;
 import sejong.reserve.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
@@ -23,27 +25,25 @@ import java.util.*;
 public class ExcelService {
     private final MemberRepository memberRepository; // Spring Data JPA를 이용하여 정의한 Repository
 
+
+
+    private final ManagementRepository managementRepository;
+
     // JPA EntityManager를 이용하여 DB와 상호작용. @PersistenceContext는 엔티티 매니저를 자동으로 주입해주는 스프링 어노테이션
     @PersistenceContext
     private EntityManager entityManager;
 
     // DB의 AUTO_INCREMENT 값을 1로 재설정하는 메소드
-    public void resetAutoIncrement(){
+    @Transactional
+    public void resetAutoIncrement() {
         // Native SQL 쿼리를 이용하여 AUTO_INCREMENT를 1로 재설정
         entityManager.createNativeQuery("ALTER TABLE member AUTO_INCREMENT = 1").executeUpdate();
-        entityManager.getTransaction().begin();
-        Query query = entityManager.createNativeQuery("ALTER TABLE member AUTO_INCREMENT = 1");
-        query.executeUpdate();
-        entityManager.getTransaction().commit();
-        entityManager.close();
     }
+
 
     // 엑셀 파일에서 데이터를 가져와 DB에 저장하는 메소드
     @Transactional
     public void importExcelFile(InputStream in) {
-        memberRepository.deleteAll(); // 현재 DB의 모든 멤버 데이터를 삭제
-        resetAutoIncrement(); // AUTO_INCREMENT 값을 재설정
-
         // try-with-resources 구문을 이용하여 엑셀 파일을 열고 작업 후 자동으로 닫음
         try (Workbook workbook = new XSSFWorkbook(in)) {
             Sheet sheet = workbook.getSheetAt(0); // 첫 번째 시트를 가져옴
@@ -61,42 +61,51 @@ public class ExcelService {
                 Row currentRow = rows.next(); // 현재 행을 가져옴
                 if (isRowEmpty(currentRow)) continue; // 행이 비어있으면 다음 행으로 넘어감
 
-                Member member = new Member(); // 새로운 멤버 객체 생성
+                String studentNo = getCellValueAsString(currentRow.getCell(headerMap.get("ID")));
+                Member member = memberRepository.findByStudentNo(studentNo);
+                if (member == null) {
+                    member = new Member(); // 새로운 멤버 객체 생성
+                    member.setStudentNo(studentNo);
+                }
+
                 // 각 멤버의 필드를 셀의 값에 따라 설정
-                member.setStudentNo(getCellValueAsString(currentRow.getCell(headerMap.get("ID"))));
                 member.setPassword(getCellValueAsString(currentRow.getCell(headerMap.get("PASS"))));
                 member.setName(getCellValueAsString(currentRow.getCell(headerMap.get("Name"))));
                 member.setMajor(getCellValueAsInt(currentRow.getCell(headerMap.get("Dept."))));
                 member.setPhoneNo(getCellValueAsString(currentRow.getCell(headerMap.get("Phone"))));
                 member.setEmail(getCellValueAsString(currentRow.getCell(headerMap.get("email"))));
+                member.setNoshow(getCellValueAsInt(currentRow.getCell(headerMap.get("NoShow"))));
 
                 // "Type" 셀의 값에 따라 권한 설정
                 String typeValue = getCellValueAsString(currentRow.getCell(headerMap.get("Type")));
                 switch (typeValue) {
                     case "1":
                         member.setAuthority(AuthState.OFFICE);
+                        member.setCnt(managementRepository.getOfficeCnt());
                         break;
                     case "2":
                         member.setAuthority(AuthState.PROFESSOR);
+                        member.setCnt(managementRepository.getProCnt());
                         break;
                     case "3":
                         member.setAuthority(AuthState.POST_STUDENT);
+                        member.setCnt(managementRepository.getPostCnt());
                         break;
                     case "4":
                         member.setAuthority(AuthState.UNI_STUDENT);
+                        member.setCnt(managementRepository.getUnivCnt());
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid Type value: " + typeValue);
                 }
 
-                member.setNoshow(getCellValueAsInt(currentRow.getCell(headerMap.get("NoShow"))));
-
-                memberRepository.save(member); // 멤버 객체를 DB에 저장
+                memberRepository.save(member); // 멤버 객체를 DB에 저장 또는 업데이트
             }
         } catch (IOException e) {
             e.printStackTrace(); // 파일 입출력 에러 발생 시 에러 메시지를 출력
         }
     }
+
 
     // 행이 비어있는지 확인하는 메소드
     private boolean isRowEmpty(Row row) {

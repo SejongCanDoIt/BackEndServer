@@ -8,7 +8,6 @@ import org.hibernate.annotations.ColumnDefault;
 import sejong.reserve.dto.ReservationDto;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter @Getter
 @ToString(exclude = {"member", "room"})
 @Table(name = "reservation_log")
-public class Reservation implements Serializable {
+public class Reservation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
     private Long id; // 예약 번호

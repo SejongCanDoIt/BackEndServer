@@ -6,18 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.BOMInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import sejong.reserve.domain.AuthState;
 import sejong.reserve.domain.Member;
-import sejong.reserve.dto.LoginDto;
 import sejong.reserve.dto.MemberDto;
 import sejong.reserve.repository.ManagementRepository;
 import sejong.reserve.repository.MemberRepository;
 import sejong.reserve.repository.ReservationRepository;
-import sejong.reserve.token.JwtTokenProvider;
 import sejong.reserve.web.exception.NotEnoughCntException;
 
 import javax.persistence.EntityManager;
@@ -37,8 +34,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final ManagementRepository managementRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
 
     // 주어진 멤버 리스트를 저장하는 메소드
     public void saveMembers(List<Member> members){
@@ -207,19 +202,6 @@ public class MemberService {
     public Integer sumOfNoShowCntAll() {
         Integer sumOfNoShowCnt = memberRepository.sumOfNoShowCntAll();
         return sumOfNoShowCnt;
-    }
-
-
-
-    @Transactional
-    public String login(LoginDto loginDto){
-        Member member = memberRepository.findBySno(loginDto.getSno())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 E-MAIL 입니다."));
-        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
-        }
-        // 로그인에 성공하면 email, roles 로 토큰 생성 후 반환
-        return jwtTokenProvider.createToken(member.getUsername(), member.getRoles());
     }
 
 }

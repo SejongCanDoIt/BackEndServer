@@ -5,13 +5,12 @@ import org.hibernate.annotations.ColumnDefault;
 import sejong.reserve.dto.CreateRequestNoticeDto;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @Table(name = "admin")
-public class Admin implements Serializable {
+public class Admin {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_id")
     private Long id; // admin primary id

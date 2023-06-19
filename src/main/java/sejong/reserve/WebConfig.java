@@ -22,25 +22,25 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/*.ico", "/error","/excel/**");
 
-//        registry.addInterceptor(new LoginCheckInterceptor())
-//                .order(2)
-//                .addPathPatterns("/**")
-//                .excludePathPatterns(
-//                        "/", "/auth/login",
-//                        "/auth/checkLogin",
-//                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
-//                        "/room/list", "/room/detail/**", "/notice/list", "/notice/detail/**",
-//                        "/reserve/today-reserve-cnt-all");
-//
-//        registry.addInterceptor(new AdminCheckInterceptor())
-//                .order(2)
-//                .addPathPatterns("/**")
-//                .excludePathPatterns(
-//                        "/", "/auth/login",
-//                        "/auth/checkLogin",
-//                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
-//                        "/member/**", "/reserve/**", "/notice/list", "/notice/detail/**",
-//                        "/room/list", "/room/detail/**", "/reserve/today-reserve-cnt-all");
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/", "/auth/login",
+                        "/auth/checkLogin",
+                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
+                        "/room/list", "/room/detail/**", "/notice/list", "/notice/detail/**",
+                        "/reserve/today-reserve-cnt-all");
+
+        registry.addInterceptor(new AdminCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/", "/auth/login",
+                        "/auth/checkLogin",
+                        "/auth/logout", "/css/**", "/*.ico", "/error","/excel/**",
+                        "/member/**", "/reserve/**", "/notice/list", "/notice/detail/**",
+                        "/room/list", "/room/detail/**", "/reserve/today-reserve-cnt-all");
     }
 
     @Override
@@ -51,12 +51,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:3000", "http://3.36.241.224:8080")
-                .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE", "HEAD")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
-                .exposedHeaders("Set-Cookie")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .maxAge(3600);
     }
-
 
 }

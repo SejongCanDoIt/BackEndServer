@@ -11,7 +11,6 @@ import sejong.reserve.domain.Member;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -46,8 +45,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Integer sumOfNoShowCntByAuthState(@Param("authority")AuthState authority);
     @Query(value = "select sum(m.noshow) from Member m")
     Integer sumOfNoShowCntAll();
-
-    @Query(value = "select m from Member m where m.studentNo = :sno")
-    Optional<Member> findBySno(String sno);
 
 }

@@ -10,14 +10,12 @@ import sejong.reserve.domain.Admin;
 import sejong.reserve.domain.Member;
 import sejong.reserve.dto.AdminDto;
 import sejong.reserve.dto.LoginDto;
-import sejong.reserve.dto.MemberDto;
 import sejong.reserve.service.AdminService;
 import sejong.reserve.service.MemberService;
 import sejong.reserve.web.SessionConst;
 import sejong.reserve.web.exception.NotLoginException;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -29,9 +27,7 @@ public class AuthController {
   private final MemberService memberService;
   private final AdminService adminService;
 
-
-
-//  @PostMapping("/login")
+  @PostMapping("/login")
   public ResponseEntity<?> login(
           @RequestBody LoginDto loginInfo,
           HttpServletResponse response,
@@ -71,11 +67,6 @@ public class AuthController {
     }
   }
 
-  @PostMapping("/login")
-  public String login(@RequestBody LoginDto loginInfo) {
-    return memberService.login(loginInfo);
-  }
-
   @GetMapping("/logout")
   public ResponseEntity<?> logout(HttpSession httpSession) throws Exception {
     httpSession.invalidate();
@@ -83,44 +74,36 @@ public class AuthController {
   }
 
   @GetMapping("/checkLogin")
-  public ResponseEntity<String> checkLogin(HttpServletRequest request) throws Exception {
-    log.info("checkLogin-member-test");
-
-    HttpSession session = request.getSession();
+  public ResponseEntity<String> checkLogin(HttpSession session) throws Exception {
+    log.info("checkLogin-test");
 
     Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
-    log.info("Session object type: " + sessionAttribute.getClass().getName());
-    log.info("session member instance = {}", sessionAttribute);
+//    log.info("session member instance = {}", sessionAttribute instanceof Member);
+//    log.info("session admin instance = {}", sessionAttribute instanceof AdminDto);
 
-    Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+    if (sessionAttribute instanceof AdminDto) {
+      AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
+//      log.info("checkLogin session = {}", admin);
+      if (admin == null) {
+        throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
+      } else {
+        log.info("admin login success");
+        return new ResponseEntity<>(admin.getLoginId(), HttpStatus.OK);
+      }
+    } else if (sessionAttribute instanceof Member) {
+      Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+//      log.info("checkLogin session = {}", member);
 
-    log.info("checkLogin session = {}", member);
-    if (member == null) {
-      log.info("member null");
+      if (member == null) {
+        throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
+      } else {
+        log.info("member login success");
+        return new ResponseEntity<>(member.getStudentNo(), HttpStatus.OK);
+      }
+    } else{
       throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
-    } else {
-      log.info("member login success");
-      return new ResponseEntity<>(member.getStudentNo(), HttpStatus.OK);
-    }
-
-  }
-
-
-  @GetMapping("/checkLogin-admin")
-  public ResponseEntity<String> checkLoginAdmin(HttpSession session) throws Exception {
-    log.info("checkLoginAdmin-test");
-
-    Object sessionAttribute = session.getAttribute(SessionConst.LOGIN_MEMBER);
-    log.info("session admin instance = {}", sessionAttribute);
-
-    AdminDto admin = (AdminDto) session.getAttribute(SessionConst.LOGIN_MEMBER);
-    log.info("checkLogin session = {}", admin);
-    if (admin == null) {
-      log.info("admin null");
-      throw new NotLoginException("로그인이 되어 있지 않은 상태 입니다!");
-    } else {
-      log.info("admin login success");
-      return new ResponseEntity<>(admin.getLoginId(), HttpStatus.OK);
     }
   }
+
+
 }

@@ -7,12 +7,11 @@ import sejong.reserve.repository.ManagementRepository;
 import sejong.reserve.repository.RoomRepository;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Data
 @Table(name = "MANAGEMENT")
-public class Management implements Serializable {
+public class Management {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     // 예약 가능 횟수
